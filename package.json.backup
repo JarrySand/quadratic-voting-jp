@@ -1,0 +1,35 @@
+{
+  "name": "quadratic-voting",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "15.x"
+  },
+  "scripts": {
+    "dev": "set NODE_OPTIONS=--openssl-legacy-provider && next dev -p 2000",
+    "build": "next build",
+    "start": "next start -p 2000"
+  },
+  "dependencies": {
+    "prisma": "^2.8.0",
+    "@prisma/client": "^2.8.0",
+    "axios": "^0.20.0",
+    "chart.js": "^2.9.3",
+    "chrome-aws-lambda": "2.1.1",
+    "file-saver": "^2.0.5",
+    "moment": "^2.29.0",
+    "momentjs": "^2.0.0",
+    "next": "9.5.3",
+    "puppeteer-core": "2.1.1",
+    "react": "16.13.1",
+    "react-accessible-accordion": "^3.3.3",
+    "react-chartjs-2": "^2.10.0",
+    "react-countdown": "^2.2.2",
+    "react-datetime": "^3.0.4",
+    "react-dom": "16.13.1",
+    "react-spinners": "^0.11.0",
+    "swr": "^0.3.5",
+    "unfetch": "^4.2.0",
+    "xlsx": "^0.16.9"
+  }
+}

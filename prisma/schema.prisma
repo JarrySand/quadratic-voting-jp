@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Events {
+  id                String   @id @default(cuid())
+  secret_key        String?  @default(cuid())
+  event_title       String?
+  event_description String?
+  num_voters        Int      @default(10)
+  credits_per_voter Int      @default(5)
+  start_event_date  DateTime @default(now())
+  end_event_date    DateTime @default(now())
+  created_at        DateTime @default(now())
+  event_data        Json?
+  voting_mode       String   @default("individual") // "individual" or "social_auth"
+  
+  // 統合テーブルへの関係
+  UnifiedVoters     UnifiedVoters[]
+}
+
+// 統合投票者テーブル - Phase 1の新設計
+model UnifiedVoters {
+  id           String   @id @default(cuid())
+  event_id     String
+  auth_type    String   // "individual" | "google" | "line"
+  user_id      String   // 統一識別子
+  email        String?  // LINE認証の場合はoptional
+  name         String?
+  vote_data    Json?
+  voted_at     DateTime @default(now())
+  
+  Events       Events   @relation(fields: [event_id], references: [id])
+  
+  @@unique([event_id, user_id])
+  @@map("Voters") // 既存テーブル名を統合後に使用
+}

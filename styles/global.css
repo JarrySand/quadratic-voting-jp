@@ -1,0 +1,80 @@
+/* 🎨 Phase 3: UI/UX最適化 - 日本語フォント・レスポンシブ対応 */
+
+/* ベースフォント設定 - 日本語最適化 */
+html {
+  scroll-behavior: smooth;
+  font-family: 
+    -apple-system, BlinkMacSystemFont, 
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI", 
+    "Meiryo UI", "MS UI Gothic", sans-serif;
+  font-feature-settings: "palt" 1; /* 日本語文字詰め */
+  line-height: 1.7; /* 日本語読みやすさ向上 */
+}
+
+/* 日本語テキスト最適化 */
+body {
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* レスポンシブデザイン基盤 */
+* {
+  box-sizing: border-box;
+}
+
+/* モバイルファースト - ベースサイズ */
+html {
+  font-size: 16px; /* 1rem = 16px */
+}
+
+/* タブレット対応 */
+@media (min-width: 768px) {
+  html {
+    font-size: 17px; /* 1rem = 17px */
+  }
+}
+
+/* デスクトップ対応 */
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px; /* 1rem = 18px */
+  }
+}
+
+/* アクセシビリティ - フォーカス表示改善 */
+:focus {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* ボタン・リンクのタッチ領域最適化 */
+button, a {
+  min-height: 44px; /* iOS推奨タッチサイズ */
+  min-width: 44px;
+}
+
+/* 日本語文章の改行最適化 */
+p, li, dd {
+  word-break: auto-phrase; /* 自然な改行 */
+  overflow-wrap: break-word;
+}
+
+/* パフォーマンス最適化 - GPU加速 */
+.chart, .event__section {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Datetime input global styles */
+.create__settings_section > input,
+.create__settings_datetime > input {
+  width: calc(100% - 10px) !important;
+  font-size: 26px !important;
+  border-radius: 5px !important;
+  border: 1px solid #f1f2e5 !important;
+  margin-top: 15px !important;
+  padding: 5px 0px 5px 5px !important;
+}

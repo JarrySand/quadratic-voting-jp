@@ -1,0 +1,305 @@
+/* ======================
+   メインコンテナ
+   ====================== */
+.create {
+  padding-bottom: 80px;
+}
+
+.createContent {
+  max-width: 700px;
+  padding: 30px 20px 0px 20px;
+  margin: 0px auto;
+}
+
+.createContent h1 {
+  font-size: 35px;
+  color: #000;
+  margin: 0px;
+}
+
+.createContent p {
+  font-size: 18px;
+  line-height: 150%;
+  color: #80806b;
+  margin-block-start: 10px;
+}
+
+/* ======================
+   設定セクション共通
+   ====================== */
+.settings {
+  text-align: left;
+  width: calc(100% - 40px);
+  max-width: 660px;
+  padding: 20px 20px;
+  margin: 0px auto;
+}
+
+.settings h2 {
+  color: #000;
+  margin-block-end: 0px;
+}
+
+.settings h3 {
+  color: #000;
+  transform: translate(5px, 15px);
+}
+
+.settings p {
+  font-size: 18px;
+  line-height: 150%;
+  color: #80806b;
+  margin-block-start: 10px;
+}
+
+.settingsSection {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #f1f2e5;
+  box-shadow: 0 0 35px rgba(127, 150, 174, 0.125);
+  padding: 15px;
+  width: calc(100% - 30px);
+  margin: 25px 0px;
+}
+
+.settingsSection label {
+  display: block;
+  color: #000;
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.settingsSection p {
+  margin: 0px;
+  font-size: 18px;
+  line-height: 150%;
+  color: #80806b;
+  margin-block-start: 10px;
+}
+
+.settingsSection input,
+.settingsSection select {
+  width: calc(100% - 10px);
+  font-size: 18px;
+  border-radius: 5px;
+  border: 1px solid #f1f2e5;
+  margin-top: 15px;
+  padding: 8px 5px;
+  font-family: suisse_intlbook;
+}
+
+.settingsDatetime input {
+  width: calc(100% - 10px);
+  font-size: 26px !important;
+  border-radius: 5px;
+  border: 1px solid #f1f2e5;
+  margin-top: 15px;
+  padding: 5px 0px 5px 5px;
+}
+
+/* ======================
+   投票方式選択
+   ====================== */
+.votingModeDescription {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+}
+
+.modeDescription h4 {
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 16px;
+}
+
+.modeDescription ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.modeDescription li {
+  margin-bottom: 0.25rem;
+  color: #666;
+  font-size: 14px;
+}
+
+.modeDescription p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* ======================
+   選択肢管理フォーム
+   ====================== */
+.subjectForm div {
+  margin: 20px 0px;
+}
+
+.subjectForm div:nth-child(1) {
+  margin-top: 0px;
+}
+
+.subjectForm div label {
+  display: block;
+  color: #000;
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.subjectForm div input,
+.subjectForm div textarea {
+  width: calc(100% - 10px);
+  max-width: calc(100% - 10px);
+  font-size: 18px;
+  border-radius: 5px;
+  border: 1px solid #f1f2e5;
+  margin-top: 5px;
+  padding: 8px 5px;
+  font-family: suisse_intlbook;
+}
+
+.subjectForm button {
+  padding: 12px 0px;
+  width: 100%;
+  display: inline-block;
+  border-radius: 5px;
+  background-color: #000;
+  color: #edff38;
+  font-size: 18px;
+  transition: 100ms ease-in-out;
+  border: none;
+  cursor: pointer;
+}
+
+.subjectForm button:hover {
+  opacity: 0.8;
+}
+
+.buttonDisabled {
+  background-color: #f1f2e5 !important;
+  color: #000 !important;
+  cursor: not-allowed !important;
+}
+
+.buttonDisabled:hover {
+  opacity: 1 !important;
+}
+
+.emptySubjects {
+  color: #000;
+  display: block;
+  text-align: center;
+}
+
+/* ======================
+   アコーディオン
+   ====================== */
+.accordionValue {
+  margin: 0px 0px 10px 0px;
+  width: 100%;
+}
+
+.accordionValue label {
+  display: block;
+  color: #000;
+  font-weight: bold;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.accordionValue textarea {
+  width: calc(100% - 10px);
+  max-width: calc(100% - 10px);
+  font-size: 18px;
+  border-radius: 5px;
+  border: 1px solid #f1f2e5;
+  margin-top: 5px;
+  padding: 8px 5px;
+  font-family: suisse_intlbook;
+}
+
+.accordionValue a {
+  text-decoration: none;
+  color: #000;
+  transition: 50ms ease-in-out;
+  font-size: 18px;
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accordionValue a:hover {
+  opacity: 0.8;
+}
+
+.accordionButtons {
+  text-align: center;
+  padding-top: 10px;
+}
+
+.accordionButtons button {
+  padding: 8px 15px;
+  display: inline-block;
+  border-radius: 5px;
+  background-color: #000;
+  color: #edff38;
+  font-size: 16px;
+  transition: 100ms ease-in-out;
+  border: none;
+  cursor: pointer;
+  margin: 0px 10px;
+}
+
+.accordionButtons button:nth-child(2) {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid black;
+}
+
+.accordionButtons button:hover {
+  opacity: 0.8;
+}
+
+/* ======================
+   イベント作成ボタン
+   ====================== */
+.submission {
+  margin: 0px auto;
+  max-width: 660px;
+  padding: 50px 20px;
+}
+
+.eventButton,
+.eventDisabled {
+  padding: 12px 0px;
+  width: 100%;
+  display: inline-block;
+  border-radius: 5px;
+  background-color: #000;
+  color: #edff38;
+  font-size: 18px;
+  transition: 100ms ease-in-out;
+  border: none;
+  cursor: pointer;
+}
+
+.eventDisabled {
+  background-color: #f1f2e5 !important;
+  color: #000 !important;
+  cursor: not-allowed !important;
+}
+
+.eventDisabled:hover {
+  opacity: 1 !important;
+}
+
+.eventButton:hover {
+  opacity: 0.8;
+} 

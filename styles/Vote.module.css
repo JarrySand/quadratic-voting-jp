@@ -1,0 +1,81 @@
+/* Vote.module.css - CSS Modules for Vote page */
+
+.vote__loading {
+  text-align: center;
+  padding: 3rem;
+  margin: 50px auto 0px auto;
+}
+
+.vote__loading h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.vote__loading p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* 認証画面 */
+.vote__auth {
+  text-align: center;
+  padding: 3rem;
+  margin: 50px auto 0px auto;
+  max-width: 400px;
+}
+
+.vote__auth h1 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.vote__auth p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 2rem;
+}
+
+.social__signin_button {
+  margin-top: 1rem;
+  padding: 12px 24px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.social__signin_button:hover {
+  background: #3367d6;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .vote__loading {
+    padding: 2rem;
+    margin: 30px auto 0px auto;
+  }
+  
+  .vote__loading h1 {
+    font-size: 1.5rem;
+  }
+  
+  .vote__loading p {
+    font-size: 1rem;
+  }
+  
+  .vote__auth {
+    padding: 2rem;
+    margin: 30px auto 0px auto;
+  }
+  
+  .social__signin_button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+} 
