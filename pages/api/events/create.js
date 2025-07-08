@@ -5,6 +5,19 @@ import crypto from "crypto"; // For generating unique IDs
 // --> /api/events/create
 export default async (req, res) => {
   try {
+    // 環境変数の設定状況をログに出力（本番環境デバッグ用）
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Environment variables check:', {
+        hasNEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
+        hasNEXTAUTH_URL: !!process.env.NEXTAUTH_URL,
+        hasDATABASE_URL: !!process.env.DATABASE_URL,
+        hasGOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+        hasGOOGLE_CLIENT_SECRET: !!process.env.GOOGLE_CLIENT_SECRET,
+        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+        NODE_ENV: process.env.NODE_ENV
+      });
+    }
+
     // Collect event details from request body
     const event = req.body;
     
@@ -78,10 +91,20 @@ export default async (req, res) => {
     // Send back created event
     res.status(201).json(createdEvent);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("イベント作成エラー:", error);
-    }
-    res.status(500).json({ error: "イベント作成に失敗しました" });
+    // 本番環境でのエラー詳細をログに出力
+    console.error("イベント作成エラー詳細:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+      requestBody: req.body,
+      timestamp: new Date().toISOString()
+    });
+    
+    res.status(500).json({ 
+      error: "イベント作成に失敗しました",
+      details: process.env.NODE_ENV === 'production' ? error.message : undefined
+    });
   }
 };
 

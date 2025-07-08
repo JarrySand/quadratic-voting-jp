@@ -20,6 +20,19 @@ const voteHandler = async (req, res) => {
   }
 
   try {
+    // 本番環境での認証デバッグ（SNS認証投票のトラブルシューティング用）
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Vote API 開始:', {
+        method: req.method,
+        has_body: !!req.body,
+        body_keys: req.body ? Object.keys(req.body) : [],
+        has_cookies: !!req.cookies,
+        cookie_keys: req.cookies ? Object.keys(req.cookies) : [],
+        user_agent: req.headers['user-agent'],
+        timestamp: new Date().toISOString()
+      });
+    }
+
     // 入力検証（実証実験用）
     const { error } = experimentVoteSchema.validate(req.body)
     if (error) {
@@ -29,6 +42,16 @@ const voteHandler = async (req, res) => {
     // 認証コンテキストを取得
     const authContext = await getAuthContext(req)
     req.authContext = authContext // レート制限で使用
+    
+    // 認証成功のデバッグログ
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Vote API 認証成功:', {
+        auth_type: authContext.type,
+        has_user_id: !!authContext.userId,
+        user_id_prefix: authContext.userId?.substring(0, 10),
+        timestamp: new Date().toISOString()
+      });
+    }
     
     // リクエストデータの取得
     const { event_id, votes, name } = req.body
@@ -75,9 +98,17 @@ const voteHandler = async (req, res) => {
     )
 
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Vote API Error:", error)
-    }
+    // 本番環境でのエラー詳細ログ
+    console.error("Vote API エラー詳細:", {
+      error_message: error.message,
+      error_stack: error.stack,
+      request_method: req.method,
+      request_body: req.body,
+      has_cookies: !!req.cookies,
+      cookie_keys: req.cookies ? Object.keys(req.cookies) : [],
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    });
     
     // 実験用エラーハンドリング
     if (error.code === 'P2002') {
@@ -88,5 +119,6 @@ const voteHandler = async (req, res) => {
   }
 }
 
-// レート制限を適用してエクスポート
-export default applyRateLimit(voteHandler)
+// レート制限を一時的に無効化してテスト（本番環境での認証問題解決のため）
+// export default applyRateLimit(voteHandler)
+export default voteHandler

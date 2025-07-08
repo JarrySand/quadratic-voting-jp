@@ -10,8 +10,31 @@ import {
 // --> /api/events/find (統一検索API)
 export default async (req, res) => {
   try {
+    // 本番環境でのデバッグログ（SNS認証投票のトラブルシューティング用）
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Find API 開始:', {
+        method: req.method,
+        query: req.query,
+        hasNEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
+        userAgent: req.headers['user-agent'],
+        cookies: Object.keys(req.cookies || {}),
+        timestamp: new Date().toISOString()
+      });
+    }
+    
     // 認証コンテキストを取得
     const authContext = await getAuthContext(req)
+    
+    // 認証コンテキストのデバッグログ
+    if (process.env.NODE_ENV === 'production') {
+      console.log('認証コンテキスト取得成功:', {
+        auth_type: authContext.type,
+        has_user_id: !!authContext.userId,
+        has_email: !!authContext.email,
+        user_id_prefix: authContext.userId?.substring(0, 10),
+        timestamp: new Date().toISOString()
+      });
+    }
     
     // イベントIDの取得
     let eventId = req.query.event_id
@@ -78,9 +101,20 @@ export default async (req, res) => {
     res.json(response)
 
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Find API Error:", error)
-    }
+    // 本番環境でのエラー詳細ログ
+    console.error("Find API エラー詳細:", {
+      error_message: error.message,
+      error_stack: error.stack,
+      request_method: req.method,
+      request_query: req.query,
+      request_headers: {
+        authorization: req.headers.authorization ? '***' : 'none',
+        cookie: req.headers.cookie ? '***' : 'none',
+        'user-agent': req.headers['user-agent']
+      },
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    });
     
     // 認証エラーの場合
     if (error.message.includes("認証")) {

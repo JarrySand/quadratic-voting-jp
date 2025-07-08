@@ -15,6 +15,17 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
+      // 本番環境でのJWTコールバックデバッグ
+      if (process.env.NODE_ENV === 'production') {
+        console.log('NextAuth JWT callback:', {
+          has_token: !!token,
+          has_account: !!account,
+          has_profile: !!profile,
+          provider: account?.provider,
+          timestamp: new Date().toISOString()
+        });
+      }
+      
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (account) {
         token.accessToken = account.access_token
@@ -28,6 +39,17 @@ export default NextAuth({
       return token
     },
     async session({ session, token }) {
+      // 本番環境でのセッションコールバックデバッグ
+      if (process.env.NODE_ENV === 'production') {
+        console.log('NextAuth session callback:', {
+          has_session: !!session,
+          has_token: !!token,
+          provider: token?.provider,
+          has_provider_id: !!(token?.googleId || token?.lineId),
+          timestamp: new Date().toISOString()
+        });
+      }
+      
       // Send properties to the client, like an access_token and user id from a provider.
       session.accessToken = token.accessToken
       session.provider = token.provider
@@ -51,9 +73,12 @@ export default NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production' // 本番環境ではtrue
+        // 本番環境での認証問題解決のため、一時的にsecureを無効化
+        secure: false // process.env.NODE_ENV === 'production'
       }
     }
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // 本番環境でのデバッグを有効化
+  debug: true,
 }) 
