@@ -61,7 +61,6 @@ export default NextAuth({
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-  debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 24 hours
@@ -79,6 +78,6 @@ export default NextAuth({
     }
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // 本番環境でのデバッグを有効化
+  // 本番環境でのデバッグを有効化（トラブルシューティング用）
   debug: true,
 }) 

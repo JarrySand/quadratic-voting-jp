@@ -11,29 +11,33 @@ import {
 export default async (req, res) => {
   try {
     // 本番環境でのデバッグログ（SNS認証投票のトラブルシューティング用）
+    const debugInfo = {
+      method: req.method,
+      query: req.query,
+      hasNEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
+      userAgent: req.headers['user-agent'],
+      cookies: Object.keys(req.cookies || {}),
+      timestamp: new Date().toISOString()
+    };
+    
     if (process.env.NODE_ENV === 'production') {
-      console.log('Find API 開始:', {
-        method: req.method,
-        query: req.query,
-        hasNEXTAUTH_SECRET: !!process.env.NEXTAUTH_SECRET,
-        userAgent: req.headers['user-agent'],
-        cookies: Object.keys(req.cookies || {}),
-        timestamp: new Date().toISOString()
-      });
+      console.log('Find API 開始:', debugInfo);
     }
     
     // 認証コンテキストを取得
     const authContext = await getAuthContext(req)
     
     // 認証コンテキストのデバッグログ
+    const authDebugInfo = {
+      auth_type: authContext.type,
+      has_user_id: !!authContext.userId,
+      has_email: !!authContext.email,
+      user_id_prefix: authContext.userId?.substring(0, 10),
+      timestamp: new Date().toISOString()
+    };
+    
     if (process.env.NODE_ENV === 'production') {
-      console.log('認証コンテキスト取得成功:', {
-        auth_type: authContext.type,
-        has_user_id: !!authContext.userId,
-        has_email: !!authContext.email,
-        user_id_prefix: authContext.userId?.substring(0, 10),
-        timestamp: new Date().toISOString()
-      });
+      console.log('認証コンテキスト取得成功:', authDebugInfo);
     }
     
     // イベントIDの取得
@@ -98,11 +102,22 @@ export default async (req, res) => {
     // レスポンスデータを構築
     const response = buildFindResponse(event, eventData, authContext, voterData)
 
+    // デバッグモード：クエリパラメータに?debug=true がある場合、診断情報を含める
+    if (req.query.debug === 'true' && process.env.NODE_ENV === 'production') {
+      response._debug = {
+        request_info: debugInfo,
+        auth_info: authDebugInfo,
+        event_id: eventId,
+        voter_data_exists: !!voterData,
+        timestamp: new Date().toISOString()
+      };
+    }
+
     res.json(response)
 
   } catch (error) {
     // 本番環境でのエラー詳細ログ
-    console.error("Find API エラー詳細:", {
+    const errorInfo = {
       error_message: error.message,
       error_stack: error.stack,
       request_method: req.method,
@@ -114,7 +129,17 @@ export default async (req, res) => {
       },
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString()
-    });
+    };
+    
+    console.error("Find API エラー詳細:", errorInfo);
+    
+    // デバッグモード：エラー情報をレスポンスに含める
+    if (req.query.debug === 'true' && process.env.NODE_ENV === 'production') {
+      return res.status(500).json({
+        error: error.message || "サーバーエラーが発生しました",
+        _debug: errorInfo
+      });
+    }
     
     // 認証エラーの場合
     if (error.message.includes("認証")) {
