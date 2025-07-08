@@ -34,12 +34,15 @@ export default async (req, res) => {
 
     // Create voters data for individual mode only
     const voters = [];
+    const voter_ids = []; // 投票者IDを収集する配列
     if (event.voting_mode === "individual") {
       // Fill array with voter data based on num_voters in request body
       for (let i = 0; i < event.num_voters; i++) {
+        const voterId = crypto.randomUUID(); // ユニークで予測不可能なID
+        voter_ids.push(voterId); // 投票者IDを配列に追加
         voters.push({
           auth_type: "individual",
-          user_id: crypto.randomUUID(), // ユニークで予測不可能なID
+          user_id: voterId,
           email: null, // 個別投票では不要
           name: null, // 個別投票では不要
           vote_data: vote_data, // Placeholder zeroed vote_data
@@ -59,7 +62,8 @@ export default async (req, res) => {
         // Stringify voteable subject data
         event_data: JSON.stringify({
           options: event.subjects,
-          credits_per_voter: event.credits_per_voter
+          credits_per_voter: event.credits_per_voter,
+          voter_ids: voter_ids // 個別投票用の投票者ID配列を追加
         }),
         voting_mode: event.voting_mode || "individual", // デフォルトは個別投票
         // Create voters from filled array (only for individual mode)
