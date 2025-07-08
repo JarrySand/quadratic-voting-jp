@@ -7,13 +7,14 @@
   },
   "scripts": {
     "dev": "next dev -p 2000",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start -p 2000",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

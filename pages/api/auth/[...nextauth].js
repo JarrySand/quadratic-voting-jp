@@ -51,7 +51,7 @@ export default NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: false // development環境ではfalse
+        secure: process.env.NODE_ENV === 'production' // 本番環境ではtrue
       }
     }
   },
