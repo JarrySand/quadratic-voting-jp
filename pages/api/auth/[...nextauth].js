@@ -72,8 +72,10 @@ export default NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        // 本番環境での認証問題解決のため、一時的にsecureを無効化
-        secure: false // process.env.NODE_ENV === 'production'
+        // 本番環境ではsecure cookieを有効化（HTTPS必須）
+        secure: process.env.NODE_ENV === 'production',
+        // 本番環境でのドメイン設定
+        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
       }
     }
   },
