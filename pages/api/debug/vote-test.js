@@ -56,50 +56,59 @@ export default async (req, res) => {
       };
     }
     
-    // Step 3: 個別投票用のイベント詳細取得テスト
-    debugSteps.step3_event_details = {
-      status: "running"
-    };
-    
-    try {
-      const latestEvent = await prisma.events.findFirst({
-        orderBy: { created_at: 'desc' },
-        where: {
-          voting_mode: 'individual'
-        }
-      });
-      
-      if (latestEvent) {
-        const eventDetails = await prisma.events.findUnique({
-          where: { id: latestEvent.id },
-          include: {
-            Voters: {
-              take: 1,
-              select: { id: true }
-            }
-          }
-        });
-        
-        debugSteps.step3_event_details = {
-          status: "success",
-          event_id: latestEvent.id,
-          event_title: latestEvent.event_title,
-          voting_mode: latestEvent.voting_mode,
-          voter_count: eventDetails.Voters.length,
-          sample_voter_id: eventDetails.Voters[0]?.id || null
-        };
-      } else {
-        debugSteps.step3_event_details = {
-          status: "error",
-          error: "個別投票用イベントが見つかりません"
-        };
-      }
-    } catch (error) {
-      debugSteps.step3_event_details = {
-        status: "error",
-        error: error.message
-      };
-    }
+         // Step 3: 個別投票用のイベント詳細取得テスト
+     debugSteps.step3_event_details = {
+       status: "running"
+     };
+     
+     try {
+       const latestEvent = await prisma.events.findFirst({
+         orderBy: { created_at: 'desc' },
+         where: {
+           voting_mode: 'individual'
+         }
+       });
+       
+       if (latestEvent) {
+         // イベント詳細情報の取得
+         const eventDetails = await prisma.events.findUnique({
+           where: { id: latestEvent.id }
+         });
+         
+         // 個別投票では、event_dataから投票者IDを取得
+         let voterIds = [];
+         let sampleVoterId = null;
+         
+         if (eventDetails.event_data) {
+           const eventData = typeof eventDetails.event_data === 'string' 
+             ? JSON.parse(eventDetails.event_data) 
+             : eventDetails.event_data;
+           
+           voterIds = eventData.voter_ids || [];
+           sampleVoterId = voterIds[0] || null;
+         }
+         
+         debugSteps.step3_event_details = {
+           status: "success",
+           event_id: latestEvent.id,
+           event_title: latestEvent.event_title,
+           voting_mode: latestEvent.voting_mode,
+           voter_ids_count: voterIds.length,
+           sample_voter_id: sampleVoterId,
+           voter_ids_sample: voterIds.slice(0, 3) // 最初の3つを表示
+         };
+       } else {
+         debugSteps.step3_event_details = {
+           status: "error",
+           error: "個別投票用イベントが見つかりません"
+         };
+       }
+     } catch (error) {
+       debugSteps.step3_event_details = {
+         status: "error",
+         error: error.message
+       };
+     }
     
     // Step 4: 個別投票API模擬テスト
     debugSteps.step4_individual_vote_simulation = {
