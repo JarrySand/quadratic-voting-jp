@@ -20,15 +20,29 @@ const voteHandler = async (req, res) => {
   }
 
   try {
+    console.log("🔍 [VOTE-API] 投票処理開始:", {
+      method: req.method,
+      body: req.body,
+      timestamp: new Date().toISOString()
+    });
+
     // 入力検証（実証実験用）
     const { error } = experimentVoteSchema.validate(req.body)
     if (error) {
+      console.log("❌ [VOTE-API] 入力検証エラー:", error.details[0].message);
       return sendErrorResponse(res, 400, `入力データが無効です: ${error.details[0].message}`)
     }
 
     // 認証コンテキストを取得
     const authContext = await getAuthContext(req)
     req.authContext = authContext // レート制限で使用
+    
+    console.log("🔍 [VOTE-API] 認証コンテキスト:", {
+      type: authContext.type,
+      isAuthenticated: authContext.isAuthenticated,
+      user: authContext.user,
+      userId: authContext.getUnifiedUserId ? authContext.getUnifiedUserId() : 'no-method'
+    });
     
     // リクエストデータの取得
     const { event_id, votes, name } = req.body
@@ -50,8 +64,28 @@ const voteHandler = async (req, res) => {
     validateVoteCredits(votes, eventData, event)
 
     // 重複投票チェック（メールアドレスベース）
+    console.log("🔍 [VOTE-API] 重複投票チェック開始:", {
+      event_id,
+      authContext: {
+        type: authContext.type,
+        user: authContext.user,
+        email: authContext.user?.email
+      }
+    });
+    
     const duplicateVoter = await checkDuplicateVoteByEmail(authContext, event_id)
+    
+    console.log("🔍 [VOTE-API] 重複投票チェック結果:", {
+      duplicateVoter,
+      has_duplicate: !!duplicateVoter
+    });
+    
     if (duplicateVoter) {
+      console.log("❌ [VOTE-API] 重複投票エラー:", {
+        existing_auth_type: duplicateVoter.auth_type,
+        existing_email: duplicateVoter.email,
+        current_email: authContext.user?.email
+      });
       return sendErrorResponse(res, 400, 
         `同じメールアドレスで既に投票済みです（${duplicateVoter.auth_type}認証）`)
     }
