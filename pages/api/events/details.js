@@ -1,83 +1,96 @@
 import prisma from "db"; // Import prisma
 import moment from "moment"; // Time formatting
+import { convertBigIntToString } from "lib/helpers"; // BigInt handling
 
 // --> /api/events/details
 export default async (req, res) => {
-  // Collect event ID and secret key (if it exists) from request
-  const {
-    query: { id, secret_key },
-  } = req;
+  try {
+    // Collect event ID and secret key (if it exists) from request
+    const {
+      query: { id, secret_key },
+    } = req;
 
-  // Collect event information from event ID
-  const event = await prisma.events.findUnique({
-    where: { id: id },
-  });
-
-  // Collect voter information using event ID
-  const voters = await prisma.unifiedVoters.findMany({
-    where: { event_id: id },
-  });
-
-  // Check for administrator access based on passed secret_key
-  const isAdmin =
-    event.secret_key && event.secret_key === secret_key ? true : false;
-  // After checking for administrator access, delete secret_key from event object
-  delete event.secret_key;
-
-  // If private_key enables administrator access
-  if (isAdmin) {
-    // Pass individual voter row details to endpoint
-    event.voters = voters;
-  }
-
-  var statistics = null;
-  var chart = null;
-
-  // If event is concluded or private_key enables administrator access
-  if (isAdmin || (moment() > moment(event.end_event_date))) {
-    // Pass voting statistics to endpoint
-    statistics = generateStatistics(
-      // Number of voteable subjects
-      JSON.parse(event.event_data).options.length,
-      // Number of max voters
-      event.num_voters,
-      // Number of credits per voter
-      event.credits_per_voter,
-      // Array of voter preferences
-      voters
-    );
-  }
-
-  // Parse event_data
-  event.event_data = JSON.parse(event.event_data);
-
-  // If event is concluded or private_key enables administrator access
-  if (isAdmin || (moment() > moment(event.end_event_date))) {
-    // Generate chart data for chartJS
-    chart = generateChart(
-      event.event_data.options,
-      statistics.linear,
-      statistics.qv
-    );
-  }
-
-  // If private_key enables administrator access
-  if (isAdmin && event.voters) {
-    // remove voter name and vote data to keep anonymous from election admins
-    const voterIds = event.voters;
-    voterIds.forEach((voter, _) => {
-      delete voter.name;
-      delete voter.vote_data;
+    // Collect event information from event ID
+    const event = await prisma.events.findUnique({
+      where: { id: id },
     });
-    event.voters = voterIds;
-  }
 
-  // Return event data, computed statistics, and chart
-  res.send({
-    event,
-    statistics,
-    chart,
-  });
+    // Collect voter information using event ID
+    const voters = await prisma.unifiedVoters.findMany({
+      where: { event_id: id },
+    });
+
+    // Check for administrator access based on passed secret_key
+    const isAdmin =
+      event.secret_key && event.secret_key === secret_key ? true : false;
+    // After checking for administrator access, delete secret_key from event object
+    delete event.secret_key;
+
+    // If private_key enables administrator access
+    if (isAdmin) {
+      // Pass individual voter row details to endpoint
+      event.voters = voters;
+    }
+
+    var statistics = null;
+    var chart = null;
+
+    // If event is concluded or private_key enables administrator access
+    if (isAdmin || (moment() > moment(event.end_event_date))) {
+      // Pass voting statistics to endpoint
+      statistics = generateStatistics(
+        // Number of voteable subjects
+        JSON.parse(event.event_data).options.length,
+        // Number of max voters
+        event.num_voters,
+        // Number of credits per voter
+        event.credits_per_voter,
+        // Array of voter preferences
+        voters
+      );
+    }
+
+    // Parse event_data
+    event.event_data = JSON.parse(event.event_data);
+
+    // If event is concluded or private_key enables administrator access
+    if (isAdmin || (moment() > moment(event.end_event_date))) {
+      // Generate chart data for chartJS
+      chart = generateChart(
+        event.event_data.options,
+        statistics.linear,
+        statistics.qv
+      );
+    }
+
+    // If private_key enables administrator access
+    if (isAdmin && event.voters) {
+      // remove voter name and vote data to keep anonymous from election admins
+      const voterIds = event.voters;
+      voterIds.forEach((voter, _) => {
+        delete voter.name;
+        delete voter.vote_data;
+      });
+      event.voters = voterIds;
+    }
+
+    // Return event data, computed statistics, and chart (with BigInt handling)
+    const response = {
+      event,
+      statistics,
+      chart,
+    };
+
+    res.send(convertBigIntToString(response));
+
+  } catch (error) {
+    console.error("Details API Error:", error);
+    res.status(500).json(convertBigIntToString({
+      error: "サーバーエラーが発生しました",
+      message: error.message,
+      timestamp: new Date().toISOString()
+    }));
+  }
 };
 
 /**

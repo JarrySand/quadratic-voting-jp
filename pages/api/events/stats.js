@@ -1,4 +1,5 @@
 import prisma from "db"
+import { convertBigIntToString } from "lib/helpers"
 
 // --> /api/events/stats (統一統計API)
 export default async (req, res) => {
@@ -6,7 +7,7 @@ export default async (req, res) => {
     const { event_id, secret_key } = req.query
 
     if (!event_id) {
-      return res.status(400).json({ error: "イベントIDが必要です" })
+      return res.status(400).json(convertBigIntToString({ error: "イベントIDが必要です" }))
     }
 
     // イベント情報を取得
@@ -26,12 +27,12 @@ export default async (req, res) => {
     })
 
     if (!event) {
-      return res.status(404).json({ error: "イベントが見つかりません" })
+      return res.status(404).json(convertBigIntToString({ error: "イベントが見つかりません" }))
     }
 
     // ソーシャル認証イベントかチェック（google_auth も含む）
     if (event.voting_mode !== "social_auth" && event.voting_mode !== "google_auth") {
-      return res.status(400).json({ error: "このイベントはソーシャル認証投票に対応していません" })
+      return res.status(400).json(convertBigIntToString({ error: "このイベントはソーシャル認証投票に対応していません" }))
     }
 
     // 管理者権限チェック（secret_keyが提供された場合）
@@ -64,7 +65,7 @@ export default async (req, res) => {
         ? JSON.parse(event.event_data) 
         : event.event_data
     } catch (parseError) {
-      return res.status(500).json({ error: "イベントデータの解析に失敗しました" })
+      return res.status(500).json(convertBigIntToString({ error: "イベントデータの解析に失敗しました" }))
     }
 
     // 投票結果を集計
@@ -130,11 +131,11 @@ export default async (req, res) => {
       is_admin: isAdmin,
     }
 
-    res.json(response)
+    res.json(convertBigIntToString(response))
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.error("Stats API error:", error)
     }
-    res.status(500).json({ error: "サーバーエラーが発生しました" })
+    res.status(500).json(convertBigIntToString({ error: "サーバーエラーが発生しました" }))
   }
 } 

@@ -4,7 +4,8 @@ import {
   getEventWithValidation, 
   parseEventData, 
   buildFindResponse,
-  sendErrorResponse 
+  sendErrorResponse,
+  convertBigIntToString
 } from "lib/helpers"
 
 // --> /api/events/find (統一検索API)
@@ -97,15 +98,16 @@ export default async (req, res) => {
           },
         }
         
-        return res.json(response)
+        return res.json(convertBigIntToString(response))
       } else {
-        return res.json({
+        const response = {
           exists: false,
           event_id: "",
           voter_name: "",
           vote_data: "",
           event_data: {},
-        })
+        }
+        return res.json(convertBigIntToString(response))
       }
     }
 
@@ -132,7 +134,7 @@ export default async (req, res) => {
     // レスポンスデータを構築
     const response = buildFindResponse(event, eventData, authContext, voterData)
 
-    res.json(response)
+    res.json(convertBigIntToString(response))
 
   } catch (error) {
     // エラーの詳細をログ出力（環境チェック削除）
