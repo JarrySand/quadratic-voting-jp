@@ -7,25 +7,24 @@ const getDatabaseUrl = () => {
     throw new Error('DATABASE_URL is not defined');
   }
   
-  // 接続プールパラメータを追加
+  // Transaction Pooler用の接続パラメータ
   const connectionParams = [
-    'connection_limit=10',        // 接続数制限（デフォルト無制限→10に制限）
-    'pool_timeout=20',            // プールタイムアウト（秒）
+    'pgbouncer=true',             // PgBouncerモード有効化（Transaction Pooler）
     'connect_timeout=60',         // 接続タイムアウト（秒）
     'socket_timeout=45',          // ソケットタイムアウト（秒）
-    'pgbouncer=true'              // PgBouncerモード有効化
+    'pool_timeout=20'             // プールタイムアウト（秒）
   ];
   
   const separator = url.includes('?') ? '&' : '?';
   const optimizedUrl = `${url}${separator}${connectionParams.join('&')}`;
   
-  console.log('🔍 [DB] Connection URL optimized:', {
+  console.log('🔍 [DB] Connection URL optimized for Transaction Pooler:', {
     has_pool_params: true,
-    connection_limit: 10,
+    pgbouncer: true,
     pool_timeout: 20,
     connect_timeout: 60,
     socket_timeout: 45,
-    pgbouncer: true,
+    pooler_type: 'transaction',
     timestamp: new Date().toISOString()
   });
   
