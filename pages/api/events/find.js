@@ -12,6 +12,7 @@ import {
 export default async (req, res) => {
   try {
     // 詳細なリクエスト情報をログ出力（環境チェック削除）
+    const apiStartTime = Date.now();
     console.log("🔍 [API] Find API 呼び出し:", {
       method: req.method,
       query: req.query,
@@ -133,6 +134,17 @@ export default async (req, res) => {
 
     // レスポンスデータを構築
     const response = buildFindResponse(event, eventData, authContext, voterData)
+
+    const apiEndTime = Date.now();
+    const apiDuration = apiEndTime - apiStartTime;
+    
+    console.log("🔍 [API] Find API 応答:", {
+      duration_ms: apiDuration,
+      event_id: eventId,
+      has_voter_data: !!voterData,
+      response_size: JSON.stringify(response).length,
+      timestamp: new Date().toISOString()
+    });
 
     res.json(convertBigIntToString(response))
 

@@ -20,6 +20,7 @@ const voteHandler = async (req, res) => {
   }
 
   try {
+    const voteStartTime = Date.now();
     console.log("🔍 [VOTE-API] 投票処理開始:", {
       method: req.method,
       body: req.body,
@@ -99,6 +100,17 @@ const voteHandler = async (req, res) => {
     // 成功レスポンス
     const existingVoter = await getVoterData(authContext, event_id)
     const isUpdate = !!existingVoter
+    
+    const voteEndTime = Date.now();
+    const voteDuration = voteEndTime - voteStartTime;
+    
+    console.log("🔍 [VOTE-API] 投票処理完了:", {
+      duration_ms: voteDuration,
+      event_id: event_id,
+      action: isUpdate ? "updated" : "created",
+      voter_id: authContext.getUnifiedUserId(),
+      timestamp: new Date().toISOString()
+    });
 
     return sendSuccessResponse(res, 
       { 
