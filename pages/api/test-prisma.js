@@ -1,5 +1,28 @@
 import prisma from "db"
 
+// BigInt値を文字列に変換するヘルパー関数
+function convertBigIntToString(obj) {
+  if (obj === null || obj === undefined) return obj;
+  
+  if (typeof obj === 'bigint') {
+    return obj.toString();
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(convertBigIntToString);
+  }
+  
+  if (typeof obj === 'object') {
+    const converted = {};
+    for (const [key, value] of Object.entries(obj)) {
+      converted[key] = convertBigIntToString(value);
+    }
+    return converted;
+  }
+  
+  return obj;
+}
+
 export default async function handler(req, res) {
   try {
     console.log("🔍 [TEST-PRISMA] Prisma段階テスト開始");
@@ -10,7 +33,7 @@ export default async function handler(req, res) {
     try {
       console.log("🔍 [TEST-PRISMA] Test 1: 基本的な$queryRaw");
       const test1 = await prisma.$queryRaw`SELECT 1 as basic_test`;
-      results.test1_basic_query = { status: "success", result: test1 };
+      results.test1_basic_query = { status: "success", result: convertBigIntToString(test1) };
       console.log("✅ [TEST-PRISMA] Test 1 成功");
     } catch (error) {
       console.error("❌ [TEST-PRISMA] Test 1 失敗:", error);
@@ -25,20 +48,20 @@ export default async function handler(req, res) {
         WHERE schemaname = 'public' 
         LIMIT 5
       `;
-      results.test2_table_list = { status: "success", result: test2 };
+      results.test2_table_list = { status: "success", result: convertBigIntToString(test2) };
       console.log("✅ [TEST-PRISMA] Test 2 成功");
     } catch (error) {
       console.error("❌ [TEST-PRISMA] Test 2 失敗:", error);
       results.test2_table_list = { status: "error", error: error.message };
     }
     
-    // Test 3: Eventsテーブル存在確認
+    // Test 3: Eventsテーブル存在確認（BigInt対応）
     try {
       console.log("🔍 [TEST-PRISMA] Test 3: Eventsテーブル存在確認");
       const test3 = await prisma.$queryRaw`
-        SELECT COUNT(*) as event_count FROM "Events" LIMIT 1
+        SELECT COUNT(*)::int as event_count FROM "Events" LIMIT 1
       `;
-      results.test3_events_count = { status: "success", result: test3 };
+      results.test3_events_count = { status: "success", result: convertBigIntToString(test3) };
       console.log("✅ [TEST-PRISMA] Test 3 成功");
     } catch (error) {
       console.error("❌ [TEST-PRISMA] Test 3 失敗:", error);
@@ -56,7 +79,7 @@ export default async function handler(req, res) {
           created_at: true
         }
       });
-      results.test4_prisma_findMany = { status: "success", result: test4 };
+      results.test4_prisma_findMany = { status: "success", result: convertBigIntToString(test4) };
       console.log("✅ [TEST-PRISMA] Test 4 成功");
     } catch (error) {
       console.error("❌ [TEST-PRISMA] Test 4 失敗:", error);
@@ -73,14 +96,14 @@ export default async function handler(req, res) {
           created_at: true
         }
       });
-      results.test5_prisma_findFirst = { status: "success", result: test5 };
+      results.test5_prisma_findFirst = { status: "success", result: convertBigIntToString(test5) };
       console.log("✅ [TEST-PRISMA] Test 5 成功");
     } catch (error) {
       console.error("❌ [TEST-PRISMA] Test 5 失敗:", error);
       results.test5_prisma_findFirst = { status: "error", error: error.message };
     }
     
-    // Test 6: Prisma client findUnique (実際のエラーが発生するクエリ)
+    // Test 6: Prisma client findUnique (実際のエラーが発生する可能性のあるクエリ)
     try {
       console.log("🔍 [TEST-PRISMA] Test 6: Prisma client findUnique");
       
@@ -99,7 +122,7 @@ export default async function handler(req, res) {
             created_at: true
           }
         });
-        results.test6_prisma_findUnique = { status: "success", result: test6 };
+        results.test6_prisma_findUnique = { status: "success", result: convertBigIntToString(test6) };
         console.log("✅ [TEST-PRISMA] Test 6 成功");
       } else {
         results.test6_prisma_findUnique = { status: "skip", message: "No events found" };
@@ -121,7 +144,7 @@ export default async function handler(req, res) {
           created_at: true
         }
       });
-      results.test7_voters_table = { status: "success", result: test7 };
+      results.test7_voters_table = { status: "success", result: convertBigIntToString(test7) };
       console.log("✅ [TEST-PRISMA] Test 7 成功");
     } catch (error) {
       console.error("❌ [TEST-PRISMA] Test 7 失敗:", error);
@@ -130,10 +153,11 @@ export default async function handler(req, res) {
     
     console.log("✅ [TEST-PRISMA] 全テスト完了");
     
+    // BigInt対応のレスポンス
     res.status(200).json({
       status: "completed",
       message: "Prisma段階テスト完了",
-      results: results,
+      results: convertBigIntToString(results),
       timestamp: new Date().toISOString()
     });
     
