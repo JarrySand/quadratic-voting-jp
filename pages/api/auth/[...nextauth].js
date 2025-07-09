@@ -39,39 +39,60 @@ export default NextAuth({
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: false, // 本番環境では無効
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 24 hours
   },
+  // Vercel本番環境用の最適化されたCookie設定
   cookies: {
     sessionToken: {
-      name: 'next-auth.session-token',
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: undefined, // Let browser handle domain automatically
+        secure: true, // 本番環境では常にtrue
       }
     },
     callbackUrl: {
-      name: 'next-auth.callback-url',
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.callback-url' 
+        : 'next-auth.callback-url',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
       }
     },
     csrfToken: {
-      name: 'next-auth.csrf-token',
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Host-next-auth.csrf-token' 
+        : 'next-auth.csrf-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
       }
+    }
+  },
+  // JWTオプションの最適化
+  jwt: {
+    maxAge: 24 * 60 * 60, // 24 hours
+  },
+  // イベントハンドラーでデバッグ情報出力
+  events: {
+    async session({ session, token }) {
+      // セッション作成時のログ（本番環境でも出力）
+      console.log('NextAuth Session Created:', {
+        provider: session?.provider,
+        expires: session?.expires,
+        userId: session?.providerId,
+      });
     }
   },
   secret: process.env.NEXTAUTH_SECRET,
