@@ -11,46 +11,16 @@ import {
 // --> /api/events/find (統一検索API)
 export default async (req, res) => {
   try {
-    // 詳細なリクエスト情報をログ出力（環境チェック削除）
-    const apiStartTime = Date.now();
-    console.log("🔍 [API] Find API 呼び出し:", {
-      method: req.method,
-      query: req.query,
-      headers: {
-        'user-agent': req.headers['user-agent'],
-        'cookie': req.headers['cookie'] ? 'Present' : 'Missing',
-        'authorization': req.headers['authorization'] ? 'Present' : 'Missing',
-        'content-type': req.headers['content-type']
-      },
-      cookies: req.headers.cookie?.split(';').map(c => c.trim()).filter(c => c.includes('next-auth') || c.includes('__Secure-') || c.includes('__Host-')),
-      timestamp: new Date().toISOString()
-    });
+
     
     // 認証コンテキストを取得
     let authContext;
     try {
       authContext = await getAuthContext(req);
       
-      // 認証成功時のデバッグ（環境チェック削除）
-      console.log("🔍 [API] 認証コンテキスト取得成功:", {
-        auth_type: authContext.type,
-        user_id: authContext.userId,
-        email: authContext.email,
-        name: authContext.name,
-        is_individual: authContext.isIndividual(),
-        is_social: authContext.isSocial(),
-        timestamp: new Date().toISOString()
-      });
+
     } catch (authError) {
-      // 認証エラーの詳細をログ出力（環境チェック削除）
-      console.error("🔍 [API] 認証コンテキスト取得エラー:", {
-        error_message: authError.message,
-        error_stack: authError.stack,
-        request_query: req.query,
-        request_body: req.body,
-        cookies_present: !!req.headers.cookie,
-        timestamp: new Date().toISOString()
-      });
+
       
       return sendErrorResponse(res, 401, authError.message);
     }
@@ -58,13 +28,7 @@ export default async (req, res) => {
     // イベントIDの取得
     let eventId = req.query.event_id
     
-    // イベントID処理のデバッグ（環境チェック削除）
-    console.log("🔍 [API] イベントID処理:", {
-      event_id_from_query: eventId,
-      auth_context_type: authContext.type,
-      is_individual: authContext.isIndividual(),
-      timestamp: new Date().toISOString()
-    });
+
     
     // 個別投票の場合は、UnifiedVotersテーブルから情報を取得
     if (authContext.isIndividual() && !eventId) {
@@ -123,40 +87,17 @@ export default async (req, res) => {
     // 既存の投票データを取得
     const voterData = await getVoterData(authContext, eventId)
 
-    // データ取得デバッグ（環境チェック削除）
-    console.log("🔍 [API] データ取得完了:", {
-      event_id: eventId,
-      event_title: event.event_title,
-      voter_data_exists: !!voterData,
-      voter_data_vote_data: voterData?.vote_data ? 'Present' : 'Missing',
-      timestamp: new Date().toISOString()
-    });
+
 
     // レスポンスデータを構築
     const response = buildFindResponse(event, eventData, authContext, voterData)
 
-    const apiEndTime = Date.now();
-    const apiDuration = apiEndTime - apiStartTime;
-    
-    console.log("🔍 [API] Find API 応答:", {
-      duration_ms: apiDuration,
-      event_id: eventId,
-      has_voter_data: !!voterData,
-      response_size: JSON.stringify(response).length,
-      timestamp: new Date().toISOString()
-    });
+
 
     res.json(convertBigIntToString(response))
 
   } catch (error) {
-    // エラーの詳細をログ出力（環境チェック削除）
-    console.error("🔍 [API] Find API エラー:", {
-      error_message: error.message,
-      error_stack: error.stack,
-      request_query: req.query,
-      request_method: req.method,
-      timestamp: new Date().toISOString()
-    });
+
     
     if (process.env.NODE_ENV === 'development') {
       console.error("Find API Error:", error)

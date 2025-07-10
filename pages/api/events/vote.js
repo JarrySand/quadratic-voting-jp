@@ -20,12 +20,7 @@ const voteHandler = async (req, res) => {
   }
 
   try {
-    const voteStartTime = Date.now();
-    console.log("🔍 [VOTE-API] 投票処理開始:", {
-      method: req.method,
-      body: req.body,
-      timestamp: new Date().toISOString()
-    });
+
 
     // 入力検証（実証実験用）
     const { error } = experimentVoteSchema.validate(req.body)
@@ -38,12 +33,7 @@ const voteHandler = async (req, res) => {
     const authContext = await getAuthContext(req)
     req.authContext = authContext // レート制限で使用
     
-    console.log("🔍 [VOTE-API] 認証コンテキスト:", {
-      type: authContext.type,
-      isAuthenticated: authContext.isAuthenticated,
-      user: authContext.user,
-      userId: authContext.getUnifiedUserId ? authContext.getUnifiedUserId() : 'no-method'
-    });
+
     
     // リクエストデータの取得
     const { event_id, votes, name } = req.body
@@ -65,21 +55,10 @@ const voteHandler = async (req, res) => {
     validateVoteCredits(votes, eventData, event)
 
     // 重複投票チェック（メールアドレスベース）
-    console.log("🔍 [VOTE-API] 重複投票チェック開始:", {
-      event_id,
-      authContext: {
-        type: authContext.type,
-        user: authContext.user,
-        email: authContext.user?.email
-      }
-    });
     
     const duplicateVoter = await checkDuplicateVoteByEmail(authContext, event_id)
     
-    console.log("🔍 [VOTE-API] 重複投票チェック結果:", {
-      duplicateVoter,
-      has_duplicate: !!duplicateVoter
-    });
+
     
     if (duplicateVoter) {
       console.log("❌ [VOTE-API] 重複投票エラー:", {
@@ -101,16 +80,7 @@ const voteHandler = async (req, res) => {
     const existingVoter = await getVoterData(authContext, event_id)
     const isUpdate = !!existingVoter
     
-    const voteEndTime = Date.now();
-    const voteDuration = voteEndTime - voteStartTime;
-    
-    console.log("🔍 [VOTE-API] 投票処理完了:", {
-      duration_ms: voteDuration,
-      event_id: event_id,
-      action: isUpdate ? "updated" : "created",
-      voter_id: authContext.getUnifiedUserId(),
-      timestamp: new Date().toISOString()
-    });
+
 
     return sendSuccessResponse(res, 
       { 

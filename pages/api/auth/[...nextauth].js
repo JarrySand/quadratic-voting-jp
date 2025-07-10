@@ -84,10 +84,9 @@ export default NextAuth({
   jwt: {
     maxAge: 24 * 60 * 60, // 24 hours
   },
-  // イベントハンドラーでデバッグ情報出力
   events: {
     async session({ session, token }) {
-      // セッション作成時のログ（本番環境でも出力）
+      // セッション作成時のログ
       console.log('NextAuth Session Created:', {
         provider: session?.provider,
         expires: session?.expires,

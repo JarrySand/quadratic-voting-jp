@@ -18,15 +18,7 @@ const getDatabaseUrl = () => {
   const separator = url.includes('?') ? '&' : '?';
   const optimizedUrl = `${url}${separator}${connectionParams.join('&')}`;
   
-  console.log('🔍 [DB] Connection URL optimized for Transaction Pooler:', {
-    has_pool_params: true,
-    pgbouncer: true,
-    pool_timeout: 20,
-    connect_timeout: 60,
-    socket_timeout: 45,
-    pooler_type: 'transaction',
-    timestamp: new Date().toISOString()
-  });
+
   
   return optimizedUrl;
 };
@@ -58,15 +50,7 @@ const prisma = new PrismaClient({
   },
 });
 
-// ログイベントリスナーの設定
-prisma.$on('query', (e) => {
-  console.log('🔍 [PRISMA] Query:', {
-    query: e.query,
-    params: e.params,
-    duration: e.duration,
-    timestamp: e.timestamp,
-  });
-});
+
 
 prisma.$on('error', (e) => {
   console.error('❌ [PRISMA] Error:', {
@@ -92,20 +76,12 @@ prisma.$on('warn', (e) => {
   });
 });
 
-// 接続テスト用のログ
-console.log('🔍 [PRISMA] Client initialized:', {
-  database_url_exists: !!process.env.DATABASE_URL,
-  database_url_preview: process.env.DATABASE_URL?.substring(0, 50) + '...',
-  node_env: process.env.NODE_ENV,
-  timestamp: new Date().toISOString(),
-});
+
 
 // 接続プールの適切なクローズ処理
 const gracefulShutdown = async () => {
-  console.log('🔍 [PRISMA] Graceful shutdown initiated...');
   try {
     await prisma.$disconnect();
-    console.log('🔍 [PRISMA] Database disconnected successfully');
   } catch (error) {
     console.error('❌ [PRISMA] Error during disconnect:', error);
   }
@@ -135,7 +111,6 @@ if (process.env.NODE_ENV === 'production') {
   connectionHealthInterval = setInterval(async () => {
     try {
       await prisma.$queryRaw`SELECT 1`;
-      console.log('🔍 [PRISMA] Connection health check: OK');
     } catch (error) {
       console.error('❌ [PRISMA] Connection health check failed:', error);
       // 必要に応じて再接続処理
