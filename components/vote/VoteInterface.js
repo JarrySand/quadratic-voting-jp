@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Navigation from "../common/navigation";
 import RemainingCredits from "./credits";
@@ -39,12 +39,6 @@ export const VoteInterface = ({
             <span>ログイン中: {session.user.name}</span>
             <span>({session.user.email})</span>
           </div>
-          <button 
-            className="signout__button"
-            onClick={() => signOut()}
-          >
-            ログアウト
-          </button>
         </div>
       )}
 

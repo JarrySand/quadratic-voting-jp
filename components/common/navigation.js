@@ -49,40 +49,8 @@ export default function Navigation(props) {
         {props.title}
       </span>
       
-      {/* Login info section */}
-      <div
-        className="login-info"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          height: '44px',
-          fontSize: '14px',
-          gap: '10px'
-        }}
-      >
-        {props.loginInfo && (
-          <>
-            <span style={{ color: '#000' }}>
-              {props.loginInfo.email}
-            </span>
-            <button
-              onClick={props.loginInfo.onLogout}
-              style={{
-                backgroundColor: '#0f0857',
-                color: 'white',
-                border: 'none',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                fontSize: '12px',
-                cursor: 'pointer',
-                height: '24px'
-              }}
-            >
-              ログアウト
-            </button>
-          </>
-        )}
-      </div>
+      {/* Login info section intentionally removed to prevent logging out */}
+      <div className="login-info" />
 
       {/* Scoped styling */}
       <style jsx>{`
@@ -129,19 +97,7 @@ export default function Navigation(props) {
           padding: 0 !important;
           vertical-align: middle !important;
         }
-        .login-info {
-          display: flex !important;
-          align-items: center !important;
-          height: 44px !important;
-          font-size: 14px !important;
-          gap: 10px !important;
-        }
-        .login-info button {
-          transition: 50ms ease-in-out;
-        }
-        .login-info button:hover {
-          opacity: 0.8;
-        }
+        .login-info { height: 44px !important; }
       `}</style>
     </div>
   );
