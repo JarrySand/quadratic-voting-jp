@@ -32,7 +32,7 @@
 ### Tech Stack
 - **Frontend**: Next.js 14.2.15 (React 18.3.1)
 - **Backend**: Node.js 22.14.0 LTS
-- **Database**: PostgreSQL + Prisma 5.22.0
+- **Database**: Supabase (PostgreSQL) + Prisma 5.22.0
 - **Authentication**: NextAuth.js 4.24.8
 - **State Management**: SWR 2.2.5
 - **Styling**: CSS Modules
@@ -84,6 +84,12 @@ CREATE TABLE UnifiedVoters (
 - **npm**: 9 or higher
 
 ### 1. Database Setup
+**Option A: Use Supabase (Recommended)**
+1. Create a project at [Supabase](https://supabase.com/)
+2. Copy the database URL from Project Settings
+3. Update `.env` with your Supabase credentials
+
+**Option B: Local PostgreSQL**
 ```bash
 # Create database
 createdb quadratic_voting
@@ -148,8 +154,8 @@ npm run test:coverage
 Create `.env` file and configure:
 
 ```env
-# Database configuration
-DATABASE_URL="postgresql://username:password@localhost:5432/quadratic_voting"
+# Database configuration (Supabase)
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
 
 # NextAuth configuration
 NEXTAUTH_URL="http://localhost:2000"
@@ -180,6 +186,16 @@ NODE_ENV="development"
 2. Create new provider and channel
 3. Configure callback URL: `http://localhost:2000/api/auth/callback/line`
 4. Configure client ID and secret in `.env`
+
+### Supabase Setup
+1. Create a new project at [Supabase](https://supabase.com/)
+2. Get your database URL from Project Settings > Database
+3. Enable Row Level Security (RLS) for tables:
+   ```sql
+   ALTER TABLE public."Voters" ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE public."Events" ENABLE ROW LEVEL SECURITY;
+   ```
+4. Configure appropriate RLS policies for your use case
 
 ## 🐳 Docker Deployment
 
@@ -268,7 +284,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 
 - **Original Project**: [RadicalxChange/quadratic-voting](https://github.com/RadicalxChange/quadratic-voting)
 - **RadicalxChange**: [Official Website](https://www.radicalxchange.org/)
-- **Live Demo**: [quadraticvote.radicalxchange.org](https://quadraticvote.radicalxchange.org/)
+- **Live Demo**: [quadratic-voting-beryl.vercel.app](https://quadratic-voting-beryl.vercel.app/)
 
 ---
 
