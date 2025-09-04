@@ -96,7 +96,7 @@ function Vote({ query }) {
           link: "/",
         }}
         title="投票"
-        loginInfo={isSocialVoting ? session : null}
+        loginInfo={null}
       />
       
       <VoteInterface

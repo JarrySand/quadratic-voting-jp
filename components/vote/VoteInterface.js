@@ -118,6 +118,8 @@ export const VoteInterface = ({
           padding: 1rem;
           background: #f8f9fa;
           border-radius: 4px;
+          /* Make header span full width when grid is active */
+          grid-column: 1 / -1;
         }
 
         .vote__user-info {
