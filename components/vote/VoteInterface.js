@@ -74,7 +74,12 @@ export const VoteInterface = ({
         <button
           className="submit__button"
           onClick={() => submitVotes(votes)}
-          disabled={submitLoading || credits < 0}
+          disabled={
+            submitLoading ||
+            credits < 0 ||
+            (data?.event_data?.start_event_date && Date.now() < new Date(data.event_data.start_event_date).getTime()) ||
+            (data?.event_data?.end_event_date && Date.now() > new Date(data.event_data.end_event_date).getTime())
+          }
         >
           {submitLoading ? "投票中..." : "投票を送信"}
         </button>
@@ -190,6 +195,11 @@ export const VoteInterface = ({
           background-color: #ccc;
           color: #666;
           cursor: not-allowed;
+        }
+        .vote__period-warning {
+          color: #c00;
+          font-weight: 600;
+          margin-top: 8px;
         }
 
         .vote__loading {
