@@ -47,7 +47,7 @@ export const VoteInterface = ({
         <div className="event__summary">
           <h2>{data.event_data.event_title}</h2>
           <p>{data.event_data.event_description}</p>
-          <Link href={`/event?id=${data.event_data.event_id}`}>
+          <Link href={`/event?id=${data.event_id}`}>
             イベント詳細を見る
           </Link>
         </div>
